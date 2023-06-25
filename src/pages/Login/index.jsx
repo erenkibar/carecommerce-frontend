@@ -3,7 +3,8 @@ import React from 'react';
 import LogoCar from '../../assets/car.png';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
-import { loginUser } from './loginService';
+import { loginUser } from '../../store/user';
+import { useDispatch } from 'react-redux';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Required'),
@@ -11,6 +12,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const Login = () => {
+  const dispatch = useDispatch();
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -19,7 +21,7 @@ const Login = () => {
     validateOnBlur: true,
     validationSchema,
     onSubmit: (values) => {
-      loginUser(values.email, values.password);
+      dispatch(loginUser(formik.values));
     }
   });
   return (

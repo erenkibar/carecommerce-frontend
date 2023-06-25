@@ -5,8 +5,9 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { NavLink } from 'react-router-dom';
+import { connect } from 'react-redux';
 
-export const NavigationBar = (props) => {
+const NavigationBar = (props) => {
   return (
     <Box sx={{ flexGrow: 1, widt: '100vw', margin: 0, padding: 0 }}>
       <AppBar style={{ background: '#fe7058' }} position="static">
@@ -25,3 +26,11 @@ export const NavigationBar = (props) => {
     </Box>
   );
 };
+
+const mapStateToProps = (state) => {
+  return {
+    isAuthorized: state.user.isAuthorized
+  };
+};
+
+export default connect(mapStateToProps)(NavigationBar);
