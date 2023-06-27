@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 import storage from 'redux-persist/lib/storage';
 import { persistReducer } from 'redux-persist';
 import user from './user';
+import brands from './brands';
 import persistStore from 'redux-persist/es/persistStore';
 
 const persistConfig = {
@@ -11,7 +12,8 @@ const persistConfig = {
 };
 
 const reducer = combineReducers({
-  user
+  user,
+  brands
 });
 
 const persistedReducer = persistReducer(persistConfig, reducer);
