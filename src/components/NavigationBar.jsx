@@ -6,9 +6,11 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { NavLink } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
+import { logout } from '../store/user';
 
 const NavigationBar = (props) => {
+  const dispatch = useDispatch();
   if (props.isAuthorized) {
     return (
       <Box sx={{ flexGrow: 1, widt: '100vw', margin: 0, padding: 0 }}>
@@ -22,6 +24,9 @@ const NavigationBar = (props) => {
             </NavLink>
             <NavLink to={'/view-cars'}>
               <Button color="inherit">View your listings</Button>
+            </NavLink>
+            <NavLink>
+              <Button onClick={() => dispatch(logout)}>Log out</Button>
             </NavLink>
           </Toolbar>
         </AppBar>

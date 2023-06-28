@@ -18,15 +18,12 @@ import LogoCar from '../../assets/car.png';
 import { useFormik } from 'formik';
 import { connect, useDispatch } from 'react-redux';
 import { getBrands } from '../../store/brands';
-import { getModelsByBrand } from './addAListingService';
+import { addACar, getModelsByBrand } from './addAListingService';
 
-const validationSchema = Yup.object().shape({
-  brand: Yup.string().required('Required'),
-  model: Yup.string().required('Required'),
-  email: Yup.string().email('Invalid email').required('Required'),
-  password: Yup.string().min(8, 'Minimum 8 characters long').required('Required'),
-  repeatPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match')
-});
+// const validationSchema = Yup.object().shape({
+//   brand: Yup.string().required('Required'),
+//   model: Yup.string().required('Required')
+// });
 
 const AddCar = (props) => {
   const [brand, setBrand] = useState();
@@ -47,13 +44,20 @@ const AddCar = (props) => {
 
   const formik = useFormik({
     initialValues: {
-      brand: '',
-      model: ''
+      brand: {},
+      model: {},
+      year: '',
+      mileage: '',
+      title: '',
+      description: '',
+      fueltype: '',
+      transmissionType: ''
     },
-    validateOnBlur: true,
-    validationSchema,
+    validateOnBlur: false,
     onSubmit: (values) => {
-      console.log('Pressed');
+      addACar(formik.values, props.user).then((response) => {
+        console.log(response);
+      });
     }
   });
 
@@ -125,7 +129,6 @@ const AddCar = (props) => {
                 </Select>
               </FormControl>
             </Box>
-            {console.log('model is', model)}
             {brand && (
               <Box sx={{ minWidth: 120, margin: '20px' }}>
                 <FormControl fullWidth>
@@ -148,39 +151,52 @@ const AddCar = (props) => {
             )}
 
             <TextField
-              value={formik.values.email}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
+              value={formik.values.year}
+              error={formik.touched.year && Boolean(formik.errors.year)}
+              helperText={formik.touched.year && formik.errors.year}
               onChange={formik.handleChange}
-              id="email"
-              name="email"
-              label={'E-mail'}
+              type="number"
+              min="1950"
+              max="2023"
+              id="year"
+              name="year"
+              label={'Year'}
               variant="outlined"
               style={{ background: 'white', margin: '20px' }}
             />
 
             <TextField
-              value={formik.values.password}
-              error={formik.touched.password && Boolean(formik.errors.password)}
-              helperText={formik.touched.password && formik.errors.password}
-              type="password"
+              value={formik.values.mileage}
+              error={formik.touched.mileage && Boolean(formik.errors.mileage)}
+              helperText={formik.touched.mileage && formik.errors.mileage}
               onChange={formik.handleChange}
-              id="password"
-              name="password"
-              label={'Password'}
+              id="mileage"
+              name="mileage"
+              label={'Mileage (in km)'}
               variant="outlined"
               style={{ background: 'white', margin: '20px' }}
             />
 
             <TextField
-              value={formik.values.repeatPassword}
-              error={formik.touched.repeatPassword && Boolean(formik.errors.repeatPassword)}
-              helperText={formik.touched.repeatPassword && formik.errors.repeatPassword}
-              type="password"
+              value={formik.values.title}
+              error={formik.touched.title && Boolean(formik.errors.title)}
+              helperText={formik.touched.title && formik.errors.title}
               onChange={formik.handleChange}
-              label={'Confirm Password'}
-              id="repeatPassword"
-              name="repeatPassword"
+              label={'Title'}
+              id="title"
+              name="title"
+              variant="outlined"
+              style={{ background: 'white', margin: '20px' }}
+            />
+            <TextField
+              value={formik.values.description}
+              error={formik.touched.description && Boolean(formik.errors.description)}
+              helperText={formik.touched.description && formik.errors.description}
+              onChange={formik.handleChange}
+              label={'Description'}
+              type="text"
+              id="description"
+              name="description"
               variant="outlined"
               style={{ background: 'white', margin: '20px' }}
             />
@@ -200,6 +216,7 @@ const AddCar = (props) => {
 
 const mapStateToProps = (state) => {
   return {
+    user: state.user,
     brands: state.brands?.brands
   };
 };
