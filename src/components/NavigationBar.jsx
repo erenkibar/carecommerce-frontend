@@ -26,7 +26,7 @@ const NavigationBar = (props) => {
               <Button color="inherit">View your listings</Button>
             </NavLink>
             <NavLink>
-              <Button onClick={() => dispatch(logout)}>Log out</Button>
+              <Button onClick={() => dispatch(logout())}>Log out</Button>
             </NavLink>
           </Toolbar>
         </AppBar>

@@ -9,22 +9,24 @@ export const getModelsByBrand = async (brandId) => {
   }
 };
 
-export const addACar = async (values, user) => {
-  console.log(values, user);
+export const addACar = async (values, user, files) => {
+  console.log('values are', values)
   try {
     const response = await axios.post(
       '/cars/add',
       {
+        images: files,
         year: String(values.year),
         mileage: values.mileage,
         price: values.price,
         title: values.title,
         description: values.description,
-        fuelType: 'PETROL',
-        transmissionType: 'MANUAL',
-        userID: '1',
-        brandID: '1',
-        modelID: '1'
+        fuelType: values.fuel,
+        transmissionType: values.transmissionType,
+        numberOfDoors: values.doors,
+        color: values.color,
+        brandID: values.brand.id,
+        modelID: values.model.id
       },
       {
         headers: {

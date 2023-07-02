@@ -19,6 +19,8 @@ import { useFormik } from 'formik';
 import { connect, useDispatch } from 'react-redux';
 import { getBrands } from '../../store/brands';
 import { addACar, getModelsByBrand } from './addAListingService';
+import { colors, fuelType, numberOfDoors, transmissionType } from './consts';
+import { Dropzone, FileMosaic } from '@dropzone-ui/react';
 
 // const validationSchema = Yup.object().shape({
 //   brand: Yup.string().required('Required'),
@@ -27,35 +29,68 @@ import { addACar, getModelsByBrand } from './addAListingService';
 
 const AddCar = (props) => {
   const [brand, setBrand] = useState();
+  const [models, setModels] = useState([]);
   const [model, setModel] = useState([]);
 
-  const handleChange = (event) => {
-    setBrand(event.target.value);
+  const [files, setFiles] = useState([]);
+  const [base64Files, setBase64Files] = useState([]);
+
+  const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      console.log(file);
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+    });
+
+  const updateFiles = async () => {
+    const base64 = [];
+    for (let i = 0; i < files.length; i++) {
+      const element = await toBase64(files[i].file);
+      const pure = element.split(',', 2);
+      base64.push(pure[1]);
+    }
+
+    setBase64Files(base64);
   };
 
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(getBrands());
   }, []);
 
   useEffect(() => {
-    getModelsByBrand(brand?.id).then((response) => setModel(response.data));
+    if (brand) {
+      getModelsByBrand(brand.id).then((response) => {
+        setModels(response.data);
+        console.log('response data is', response.data);
+      });
+    }
   }, [brand]);
+
+  useEffect(() => {
+    updateFiles();
+  }, [files]);
 
   const formik = useFormik({
     initialValues: {
+      photos: {},
       brand: {},
       model: {},
       year: '',
       mileage: '',
       title: '',
       description: '',
-      fueltype: '',
-      transmissionType: ''
+      color: '',
+      fuel: '',
+      transmissionType: '',
+      doors: ''
     },
     validateOnBlur: false,
-    onSubmit: (values) => {
-      addACar(formik.values, props.user).then((response) => {
+    onSubmit: () => {
+      addACar(formik.values, props.user, base64Files).then((response) => {
         console.log(response);
       });
     }
@@ -87,39 +122,31 @@ const AddCar = (props) => {
             flexDirection: 'column',
             minHeight: '100%',
             width: '100%',
-            justifyContent: 'space-around'
+            justifyContent: 'space-between'
           }}
         >
           <Container
             style={{
               background: 'white',
-              display: 'flex',
               flexDirection: 'column',
               alignSelf: 'center',
-              width: '500px'
+              width: '80%'
             }}
           >
             <h2 style={{ color: '#fe7058', margin: '20px' }}>Add A Listing</h2>
-            {/* <TextField
-              value={formik.values.firstname}
-              error={formik.touched.firstname && Boolean(formik.errors.firstname)}
-              helperText={formik.touched.firstname && formik.errors.firstname}
-              onChange={formik.handleChange}
-              id="firstname"
-              name="firstname"
-              label={'Name'}
-              variant="outlined"
-              style={{ background: 'white', margin: '20px' }}
-            /> */}
             <Box sx={{ minWidth: 120, margin: '20px' }}>
               <FormControl fullWidth>
                 <InputLabel id="brand-label">Brand</InputLabel>
                 <Select
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    formik.handleChange(e);
+                    setBrand(e.target.value);
+                  }}
                   labelId="brand-label"
                   label="Brand"
                   id="brand"
                   name="brand"
+                  error={formik.touched.brand && Boolean(formik.errors.brand)}
                 >
                   {props.brands?.map((value) => (
                     <MenuItem value={value} key={value.id}>
@@ -134,14 +161,21 @@ const AddCar = (props) => {
                 <FormControl fullWidth>
                   <InputLabel id="model-label">Model</InputLabel>
                   <Select
-                    onChange={(value) => console.log(value)}
+                    onChange={(e) => {
+                      console.log('e is', e);
+                      formik.handleChange(e);
+                      setModel(e);
+                    }}
                     labelId="model-label"
-                    label="model"
+                    label="Model"
                     id="model"
                     name="model"
+                    error={
+                      formik.touched.model && formik.values.brand && Boolean(formik.errors.model)
+                    }
                   >
-                    {model?.map((value) => (
-                      <MenuItem value={value.name} key={value.id}>
+                    {models?.map((value) => (
+                      <MenuItem value={value} key={value.id}>
                         {value.name}
                       </MenuItem>
                     ))}
@@ -149,6 +183,29 @@ const AddCar = (props) => {
                 </FormControl>
               </Box>
             )}
+
+            <InputLabel style={{ margin: '20px', marginBottom: '0px' }} id="photos-label">
+              Upload photos
+            </InputLabel>
+            {/* <input multiple type="file" onChange={(e) => setFiles(e.target.files)}></input> */}
+            <Dropzone
+              disableScroll
+              accept="image/*"
+              maxFiles="5"
+              label="Upload photos here"
+              onChange={setFiles}
+              value={files}
+              style={{
+                minHeight: '120px',
+                marginTop: '0px',
+                marginLeft: '20px',
+                marginRight: '20px'
+              }}
+            >
+              {files.map((file) => (
+                <FileMosaic key={file.lastModified} {...file} preview />
+              ))}
+            </Dropzone>
 
             <TextField
               value={formik.values.year}
@@ -176,6 +233,82 @@ const AddCar = (props) => {
               variant="outlined"
               style={{ background: 'white', margin: '20px' }}
             />
+            <Box sx={{ margin: '20px' }}>
+              <FormControl fullWidth>
+                <InputLabel id="fuel-label">Fuel Type</InputLabel>
+                <Select
+                  onChange={formik.handleChange}
+                  labelId="fuel-label"
+                  label="fuel"
+                  id="fuel"
+                  name="fuel"
+                >
+                  {fuelType.map((value) => (
+                    <MenuItem value={value} key={value}>
+                      {value}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+
+            <Box sx={{ margin: '20px' }}>
+              <FormControl fullWidth>
+                <InputLabel id="fuel-label">Color</InputLabel>
+                <Select
+                  onChange={formik.handleChange}
+                  labelId="color-label"
+                  label="color"
+                  id="color"
+                  name="color"
+                >
+                  {colors.map((value) => (
+                    <MenuItem value={value} key={value}>
+                      {value}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+
+            <Box sx={{ margin: '20px' }}>
+              <FormControl fullWidth>
+                <InputLabel id="fuel-label">Transmission Type</InputLabel>
+                <Select
+                  onChange={formik.handleChange}
+                  labelId="transmissionType-label"
+                  label="transmissionType"
+                  id="transmissionType"
+                  name="transmissionType"
+                >
+                  {transmissionType.map((value) => (
+                    <MenuItem value={value} key={value}>
+                      {value}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+
+            <Box sx={{ margin: '20px' }}>
+              <FormControl fullWidth>
+                <InputLabel id="fuel-label">Number of Doors</InputLabel>
+                <Select
+                  onChange={formik.handleChange}
+                  labelId="doors-label"
+                  label="doors"
+                  id="doors"
+                  name="doors"
+                  error={formik.touched.doors && Boolean(formik.errors.doors)}
+                >
+                  {numberOfDoors.map((value) => (
+                    <MenuItem value={value} key={value}>
+                      {value}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
 
             <TextField
               value={formik.values.title}

@@ -9,6 +9,7 @@ import LandingPage from './pages/LandingPage';
 import { ProtectedRoute } from './components';
 import Home from './pages/Home';
 import AddCar from './pages/AddAListing';
+import CarList from './pages/CarList';
 
 function App() {
   return (
@@ -31,6 +32,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AddCar />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/view-cars"
+          element={
+            <ProtectedRoute>
+              <CarList/>
             </ProtectedRoute>
           }
         />
