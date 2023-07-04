@@ -16,6 +16,7 @@
         "react"
     ],
     "rules": {
-        "prettier/prettier": "warn"
+        "prettier/prettier": "warn",
+        "no-unused-vars": "warn"
     }
 }

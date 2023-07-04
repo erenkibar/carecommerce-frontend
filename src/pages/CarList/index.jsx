@@ -3,9 +3,21 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { getCarListing } from './getListing';
 import { Button, Card, CardContent, Container, Typography } from '@mui/material';
+import './index.css';
+import { deleteCar } from './deleteCar';
+import { toast } from 'react-toastify';
 
 const CarList = (props) => {
   const [carList, setCarList] = useState([]);
+
+  const removeCar = (car) => {
+    const updatedCarList = carList.filter((element) => element.id !== car);
+    setCarList(updatedCarList);
+    deleteCar(props.user, car)
+      .then(() => toast.success('Car listing deleted succesfully'))
+      .catch((e) => toast.error('Error deleting car listing'));
+  };
+
   useEffect(() => {
     getCarListing(props.user).then((response) => {
       setCarList(response.data);
@@ -15,36 +27,31 @@ const CarList = (props) => {
   return (
     <Container
       style={{
-        display: 'flex',
-        flexDirection: 'row',
+        backgroundColor: 'whitesmoke',
         justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        flexWrap: 'wrap'
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+        width: '100%',
+        height: 'auto'
       }}
-      item
-      s={12}
     >
-      <Container
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          flexDirection: 'row',
-          width: '100%',
-          height: '100vh'
-        }}
-      >
-        {carList.map((element) => (
-          <Card
-            key={element.id}
+      {carList.map((element) => (
+        <Card
+          key={element.id}
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            margin: '5px'
+          }}
+        >
+          <Container
             style={{
               display: 'flex',
               flexDirection: 'row',
-              margin: '20px',
-              flexWrap: 'wrap',
-              justifyContent: 'flex-start'
+              justifyContent: 'center',
+              alignSelf: 'center'
             }}
-            sx={{ alignContent: 'center', minWidth: 800, height: 400 }}
           >
             <CardContent>
               <img
@@ -52,13 +59,15 @@ const CarList = (props) => {
                 src={`data:image/png;base64,${element.images[0]}`}
               />
             </CardContent>
-            <CardContent>
-              <Typography gutterBottom variant="h4" component="div">
-                {element.title}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {element.description}
-              </Typography>
+            <Container style={{ display: 'flex', flexDirection: 'column' }}>
+              <Container style={{ margin: '10px' }}>
+                <Typography gutterBottom variant="h4" component="div">
+                  {element.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {element.description}
+                </Typography>
+              </Container>
               <Container style={{ display: 'flex', flexDirection: 'row' }}>
                 <CardContent>
                   <h3>Year</h3>
@@ -76,14 +85,16 @@ const CarList = (props) => {
                   <h3>Engine Size</h3>
                   <p>{element.engineSize} </p>
                 </CardContent>
-                <Button>Delete Icon</Button>
+                <CardContent>
+                  <Button onClick={() => removeCar(element.id)} style={{ color: 'red' }}>
+                    Delete
+                  </Button>
+                </CardContent>
               </Container>
-              {console.log(carList)}
-
-            </CardContent>
-          </Card>
-        ))}
-      </Container>
+            </Container>
+          </Container>
+        </Card>
+      ))}
     </Container>
   );
 };

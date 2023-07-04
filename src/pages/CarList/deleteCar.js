@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-export const getCarListing = async (user) => {
-  const carList = await axios.delete('/cars/', {
+export const deleteCar = async (user, id) => {
+  const response = await axios.delete(`/cars/${id}`, {
     headers: {
       Authorization: `Bearer ${user.user.token}`
     }
   });
-  return carList;
+  return response;
 };

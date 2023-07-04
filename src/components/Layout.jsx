@@ -4,7 +4,7 @@ import React from 'react';
 
 const Layout = (props) => {
   return (
-    <Container style={{ background: 'white', maxWidth: '100vw', height: '100vh', padding: 0 }}>
+    <Container style={{ background: 'white', minWidth: '100vw', height: '100vh', padding: 0 }}>
       {props.children}
     </Container>
   );

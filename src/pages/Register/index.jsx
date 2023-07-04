@@ -60,6 +60,7 @@ const Register = () => {
         <Grid
           style={{
             display: 'flex',
+            marginTop: '5px',
             flexDirection: 'column',
             minHeight: '100%',
             width: '100%',

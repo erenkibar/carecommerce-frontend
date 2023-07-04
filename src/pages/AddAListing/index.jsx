@@ -21,6 +21,7 @@ import { getBrands } from '../../store/brands';
 import { addACar, getModelsByBrand } from './addAListingService';
 import { colors, fuelType, numberOfDoors, transmissionType } from './consts';
 import { Dropzone, FileMosaic } from '@dropzone-ui/react';
+import { toast } from 'react-toastify';
 
 // const validationSchema = Yup.object().shape({
 //   brand: Yup.string().required('Required'),
@@ -90,9 +91,14 @@ const AddCar = (props) => {
     },
     validateOnBlur: false,
     onSubmit: () => {
-      addACar(formik.values, props.user, base64Files).then((response) => {
-        console.log(response);
-      });
+      addACar(formik.values, props.user, base64Files)
+        .then((response) => {
+          toast.success('Car listing successfully created');
+          console.log(response);
+        })
+        .catch(() => {
+          toast.error('Error creating car listing');
+        });
     }
   });
 
