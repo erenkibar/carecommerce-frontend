@@ -20,19 +20,117 @@ import { connect, useDispatch } from 'react-redux';
 import { getBrands } from '../../store/brands';
 import { getModelsByBrand } from '../AddAListing/addAListingService';
 import { colors, fuelType, numberOfDoors, transmissionType } from '../AddAListing/consts';
+import { searchCars } from './searchCars';
+import { toast } from 'react-toastify';
 
 const Home = (props) => {
   const [latestCars, setLatestCars] = useState([]);
   const [brand, setBrand] = useState();
   const [models, setModels] = useState([]);
   const [model, setModel] = useState([]);
+  const [activeSearch, setActiveSearch] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
 
   const dispatch = useDispatch();
 
   const formik = useFormik({
-    initialValues: {},
-    validateOnBlur: false
+    initialValues: {
+      brand: {},
+      model: {},
+      minyear: '',
+      maxyear: '',
+      minmileage: '',
+      maxmileage: '',
+      fuel: '',
+      color: '',
+      transmissiontype: '',
+      doors: '',
+      minprice: '',
+      maxprice: ''
+    },
+    validateOnBlur: false,
+    onSubmit: () => {
+      const json = SearchJSON.searchCriteriaList.filter((x) => x.value !== '');
+      SearchJSON.searchCriteriaList = json;
+      console.log(json);
+      searchCars(SearchJSON)
+        .then((response) => {
+          setSearchResults(response.data);
+          toast.success('Successful search');
+        })
+        .catch((e) => toast.error('An error occurred'))
+        .finally((e) => setActiveSearch(true));
+    },
+    onReset: () => {
+      setActiveSearch(false);
+    }
   });
+
+  const SearchJSON = {
+    dataOption: 'all',
+    searchCriteriaList: [
+      {
+        filterKey: 'brand',
+        operation: 'eq',
+        value: formik.values.brand.name || ''
+      },
+      {
+        filterKey: 'model',
+        operation: 'eq',
+        value: formik.values.model.name || ''
+      },
+      {
+        filterKey: 'minyear',
+        operation: 'gt',
+        value: formik.values.minyear.toString()
+      },
+      {
+        filterKey: 'maxyear',
+        operation: 'lt',
+        value: formik.values.maxyear
+      },
+      {
+        filterKey: 'minmileage',
+        operation: 'gt',
+        value: formik.values.minmileage
+      },
+      {
+        filterKey: 'maxmileage',
+        operation: 'gt',
+        value: formik.values.maxmileage
+      },
+      {
+        filterKey: 'fuel',
+        operation: 'eq',
+        value: formik.values.fuel
+      },
+      {
+        filterKey: 'color',
+        operation: 'eq',
+        value: formik.values.color
+      },
+      {
+        filterKey: 'transmissiontype',
+        operation: 'eq',
+        value: formik.values.transmissiontype
+      },
+      {
+        filterKey: 'doors',
+        operation: 'eq',
+        value: formik.values.doors
+      },
+      {
+        filterKey: 'minprice',
+        operation: 'gt',
+        value: formik.values.minprice
+      },
+      {
+        filterKey: 'maxprice',
+        operation: 'lt',
+        value: formik.values.maxprice
+      }
+    ]
+  };
 
   useEffect(() => {
     dispatch(getBrands());
@@ -235,13 +333,13 @@ const Home = (props) => {
           <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             <Box sx={{ margin: '20px', width: '50%' }}>
               <FormControl fullWidth>
-                <InputLabel id="fuel-label">Transmission Type</InputLabel>
+                <InputLabel id="transmissiontype-label">Transmission Type</InputLabel>
                 <Select
                   onChange={formik.handleChange}
-                  labelId="transmissionType-label"
-                  label="transmissionType"
-                  id="transmissionType"
-                  name="transmissionType"
+                  labelId="transmissiontype-label"
+                  label="transmissiontype"
+                  id="transmissiontype"
+                  name="transmissiontype"
                 >
                   {transmissionType.map((value) => (
                     <MenuItem value={value} key={value}>
@@ -297,6 +395,7 @@ const Home = (props) => {
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
             <Button
+              onClick={formik.handleSubmit}
               style={{
                 margin: '20px',
                 backgroundColor: '#fe7058',
@@ -308,6 +407,7 @@ const Home = (props) => {
               Search
             </Button>
             <Button
+              onClick={formik.handleReset}
               style={{
                 margin: '20px',
                 padding: '10px 30px',
@@ -320,7 +420,11 @@ const Home = (props) => {
           </Box>
         </Container>
       </Container>
-      <h2>Recently Added Listings</h2>
+      {activeSearch ? (
+        <h2>{`Search Results (${searchResults.length})`}</h2>
+      ) : (
+        <h2> Recently Added Listings</h2>
+      )}
       <Container
         style={{
           display: 'flex',
@@ -331,26 +435,49 @@ const Home = (props) => {
           flexWrap: 'wrap'
         }}
       >
-        {latestCars.map((element) => (
-          <Card key={element.id} style={{ margin: 15, minHeight: '500px', minWidth: '300px' }}>
-            <CardContent>
-              <CardMedia
-                component="img"
-                height="250"
-                sx={{ objectFit: 'cover' }}
-                src={`data:image/png;base64,${element.images[0]}`}
-              />
-            </CardContent>
-            <CardContent>
-              <Typography gutterBottom variant="h4" component="div">
-                {element.title}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {element.description}
-              </Typography>
-            </CardContent>
-          </Card>
-        ))}
+                        {console.log(typeof(searchResults))}
+
+        {activeSearch
+          ? searchResults?.map((element) => (
+              <Card key={element.id} style={{ margin: 15, minHeight: '500px', minWidth: '300px' }}>
+                <CardContent>
+                  <CardMedia
+                    component="img"
+                    height="250"
+                    sx={{ objectFit: 'cover' }}
+                    src={`data:image/png;base64,${element.images[0]}`}
+                  />
+                </CardContent>
+                <CardContent>
+                  <Typography gutterBottom variant="h4" component="div">
+                    {element.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {element.description}
+                  </Typography>
+                </CardContent>
+              </Card>
+            ))
+          : latestCars.map((element) => (
+              <Card key={element.id} style={{ margin: 15, minHeight: '500px', minWidth: '300px' }}>
+                <CardContent>
+                  <CardMedia
+                    component="img"
+                    height="250"
+                    sx={{ objectFit: 'cover' }}
+                    src={`data:image/png;base64,${element.images[0]}`}
+                  />
+                </CardContent>
+                <CardContent>
+                  <Typography gutterBottom variant="h4" component="div">
+                    {element.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {element.description}
+                  </Typography>
+                </CardContent>
+              </Card>
+            ))}
       </Container>
     </Container>
   );

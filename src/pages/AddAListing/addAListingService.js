@@ -10,7 +10,6 @@ export const getModelsByBrand = async (brandId) => {
 };
 
 export const addACar = async (values, user, files) => {
-  console.log('values are', values)
   try {
     const response = await axios.post(
       '/cars/add',
