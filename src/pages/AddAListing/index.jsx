@@ -23,10 +23,18 @@ import { colors, fuelType, numberOfDoors, transmissionType } from './consts';
 import { Dropzone, FileMosaic } from '@dropzone-ui/react';
 import { toast } from 'react-toastify';
 
-// const validationSchema = Yup.object().shape({
-//   brand: Yup.string().required('Required'),
-//   model: Yup.string().required('Required')
-// });
+const validationSchema = Yup.object().shape({
+  brand: Yup.object().required('Required'),
+  model: Yup.object().required('Required'),
+  year: Yup.string().required('Required'),
+  price: Yup.string().required('Required'),
+  fuel: Yup.string().required('Required'),
+  color: Yup.string().required('Required'),
+  mileage: Yup.string().required('Required'),
+  title: Yup.string().required('Required'),
+  doors: Yup.string().required('Required'),
+  description: Yup.string().required('Required')
+});
 
 const AddCar = (props) => {
   const [brand, setBrand] = useState();
@@ -90,6 +98,7 @@ const AddCar = (props) => {
       doors: ''
     },
     validateOnBlur: false,
+    validationSchema,
     onSubmit: () => {
       addACar(formik.values, props.user, base64Files)
         .then((response) => {
@@ -239,10 +248,26 @@ const AddCar = (props) => {
               variant="outlined"
               style={{ background: 'white', margin: '20px' }}
             />
+
+            <TextField
+              value={formik.values.price}
+              error={formik.touched.price && Boolean(formik.errors.price)}
+              helperText={formik.touched.price && formik.errors.price}
+              onChange={formik.handleChange}
+              id="price"
+              name="price"
+              label={'Price (in лв.)'}
+              variant="outlined"
+              style={{ background: 'white', margin: '20px' }}
+            />
+
             <Box sx={{ margin: '20px' }}>
               <FormControl fullWidth>
                 <InputLabel id="fuel-label">Fuel Type</InputLabel>
                 <Select
+                  value={formik.values.fuel}
+                  error={formik.touched.fuel && Boolean(formik.errors.fuel)}
+                  helperText={formik.touched.fuel && formik.errors.fuel}
                   onChange={formik.handleChange}
                   labelId="fuel-label"
                   label="fuel"
@@ -262,6 +287,9 @@ const AddCar = (props) => {
               <FormControl fullWidth>
                 <InputLabel id="fuel-label">Color</InputLabel>
                 <Select
+                  value={formik.values.color}
+                  error={formik.touched.color && Boolean(formik.errors.color)}
+                  helperText={formik.touched.color && formik.errors.color}
                   onChange={formik.handleChange}
                   labelId="color-label"
                   label="color"
@@ -281,6 +309,9 @@ const AddCar = (props) => {
               <FormControl fullWidth>
                 <InputLabel id="fuel-label">Transmission Type</InputLabel>
                 <Select
+                  value={formik.values.transmissionType}
+                  error={formik.touched.transmissionType && Boolean(formik.errors.transmissionType)}
+                  helperText={formik.touched.transmissionType && formik.errors.transmissionType}
                   onChange={formik.handleChange}
                   labelId="transmissionType-label"
                   label="transmissionType"
@@ -300,12 +331,14 @@ const AddCar = (props) => {
               <FormControl fullWidth>
                 <InputLabel id="fuel-label">Number of Doors</InputLabel>
                 <Select
+                  value={formik.values.doors}
+                  error={formik.touched.doors && Boolean(formik.errors.doors)}
+                  helperText={formik.touched.doors && formik.errors.doors}
                   onChange={formik.handleChange}
                   labelId="doors-label"
                   label="doors"
                   id="doors"
                   name="doors"
-                  error={formik.touched.doors && Boolean(formik.errors.doors)}
                 >
                   {numberOfDoors.map((value) => (
                     <MenuItem value={value} key={value}>
