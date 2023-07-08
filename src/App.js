@@ -11,6 +11,10 @@ import AddCar from './pages/AddAListing';
 import CarList from './pages/CarList';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import DetailedCarView from './pages/DetailedCarView';
+import Admin from './pages/Admin';
+import ViewAllUsers from './pages/AdminViewAllUsers';
+import AdminViewAllCars from './pages/AdminViewAllCars';
 
 function App() {
   return (
@@ -28,8 +32,10 @@ function App() {
       <NavigationBar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/admin" element={<Admin />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="car/:carid" element={<DetailedCarView />} />
         <Route
           path="/add-car"
           element={
@@ -43,6 +49,22 @@ function App() {
           element={
             <ProtectedRoute>
               <CarList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/all-users"
+          element={
+            <ProtectedRoute>
+              <ViewAllUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/all-cars"
+          element={
+            <ProtectedRoute>
+              <AdminViewAllCars />
             </ProtectedRoute>
           }
         />

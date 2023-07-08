@@ -100,6 +100,7 @@ const AddCar = (props) => {
     validateOnBlur: false,
     validationSchema,
     onSubmit: () => {
+      console.log(base64Files)
       addACar(formik.values, props.user, base64Files)
         .then((response) => {
           toast.success('Car listing successfully created');

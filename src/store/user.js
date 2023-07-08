@@ -18,7 +18,8 @@ const slice = createSlice({
     user: null,
     fetchingUser: null,
     fetchingError: null,
-    isAuthorized: null
+    isAuthorized: null,
+    role: null
   },
   reducers: {
     logout(state, action) {
@@ -44,8 +45,8 @@ const slice = createSlice({
       state.fetchingUser = false;
       state.user = action.payload;
       state.isAuthorized = true;
+      state.role = action.payload.role;
       toast.success('Login success');
-
     }
   }
 });

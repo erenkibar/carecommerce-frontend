@@ -19,20 +19,28 @@ const NavigationBar = (props) => {
       <Box sx={{ flexGrow: 1, widt: '100vw', marginBottom: 5, padding: 0 }}>
         <AppBar style={{ background: '#fe7058' }} position="static">
           <Toolbar>
-            <Box
-              onClick={() => navigate('/home')}
-              variant="h6"
-              component="div"
-              sx={{ flexGrow: 1 }}
-            >
+            <Box onClick={() => navigate('/')} variant="h6" component="div" sx={{ flexGrow: 1 }}>
               Car E-commerce Software
             </Box>
-            <NavLink className={'navlink'} to={'/add-car'}>
-              <Button color="inherit">Add a listing</Button>
-            </NavLink>
-            <NavLink className={'navlink'} to={'/view-cars'}>
-              <Button color="inherit">View your listings</Button>
-            </NavLink>
+            {props.role && props?.role === 'ADMIN' ? (
+              <NavLink className={'navlink'} to={'/cars-all'}>
+                <Button color="inherit">View All cars</Button>
+              </NavLink>
+            ) : (
+              <NavLink className={'navlink'} to={'/add-car'}>
+                <Button color="inherit">Add a listing</Button>
+              </NavLink>
+            )}
+            {props.role && props.role === 'ADMIN' ? (
+              <NavLink className={'navlink'} to={'/all-users'}>
+                <Button color="inherit">View all users</Button>
+              </NavLink>
+            ) : (
+              <NavLink className={'navlink'} to={'/view-cars'}>
+                <Button color="inherit">View your listings</Button>
+              </NavLink>
+            )}
+
             <NavLink className={'navlink'}>
               <Button onClick={() => dispatch(logout())}>Log out</Button>
             </NavLink>
@@ -68,7 +76,8 @@ const NavigationBar = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    isAuthorized: state.user.isAuthorized
+    isAuthorized: state.user.isAuthorized,
+    role: state.user.role
   };
 };
 

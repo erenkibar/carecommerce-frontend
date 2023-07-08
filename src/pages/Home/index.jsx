@@ -22,6 +22,7 @@ import { getModelsByBrand } from '../AddAListing/addAListingService';
 import { colors, fuelType, numberOfDoors, transmissionType } from '../AddAListing/consts';
 import { searchCars } from './searchCars';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const Home = (props) => {
   const [latestCars, setLatestCars] = useState([]);
@@ -32,7 +33,11 @@ const Home = (props) => {
   const [searchResults, setSearchResults] = useState([]);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+  const navigateToDetails = (car) => {
+    navigate(`/car/${car.id}`, { state: {car} });
+  };
   const formik = useFormik({
     initialValues: {
       brand: {},
@@ -435,11 +440,15 @@ const Home = (props) => {
           flexWrap: 'wrap'
         }}
       >
-                        {console.log(typeof(searchResults))}
+        {console.log(typeof searchResults)}
 
         {activeSearch
           ? searchResults?.map((element) => (
-              <Card key={element.id} style={{ margin: 15, minHeight: '500px', minWidth: '300px' }}>
+              <Card
+                onClick={() => navigateToDetails(element)}
+                key={element.id}
+                style={{ margin: 15, minHeight: '500px', minWidth: '300px' }}
+              >
                 <CardContent>
                   <CardMedia
                     component="img"
@@ -448,18 +457,48 @@ const Home = (props) => {
                     src={`data:image/png;base64,${element.images[0]}`}
                   />
                 </CardContent>
-                <CardContent>
-                  <Typography gutterBottom variant="h4" component="div">
-                    {element.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {element.description}
-                  </Typography>
+                <CardContent style={{ display: 'flex', flexDirection: 'row' }}>
+                  <Container>
+                    <Typography gutterBottom variant="h4" component="div">
+                      {element.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.primary">
+                      {element.description}
+                    </Typography>
+                    <Typography
+                      style={{ border: '1px', borderColor: 'black' }}
+                      variant="h4"
+                      color="text.secondary"
+                    >
+                      {element.price} лв.
+                    </Typography>
+                  </Container>
+                  <Container style={{ display: 'flex', flexDirection: 'column' }}>
+                    <Typography variant="h6" color="text.secondary">
+                      {element.year}
+                    </Typography>
+                    <Typography variant="h6" color="text.secondary">
+                      {element.color}
+                    </Typography>
+                    <Typography variant="h6" color="text.secondary">
+                      {element.fuel}
+                    </Typography>
+                    <Typography variant="h6" color="text.secondary">
+                      {element.transmissionType}
+                    </Typography>
+                    <Typography variant="h6" color="text.secondary">
+                      {element.mileage} km.
+                    </Typography>
+                  </Container>
                 </CardContent>
               </Card>
             ))
           : latestCars.map((element) => (
-              <Card key={element.id} style={{ margin: 15, minHeight: '500px', minWidth: '300px' }}>
+              <Card
+                onClick={() => navigateToDetails(element)}
+                key={element.id}
+                style={{ margin: 15, minHeight: '500px', minWidth: '300px' }}
+              >
                 <CardContent>
                   <CardMedia
                     component="img"
@@ -468,13 +507,39 @@ const Home = (props) => {
                     src={`data:image/png;base64,${element.images[0]}`}
                   />
                 </CardContent>
-                <CardContent>
-                  <Typography gutterBottom variant="h4" component="div">
-                    {element.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {element.description}
-                  </Typography>
+                <CardContent style={{ display: 'flex', flexDirection: 'row' }}>
+                  <Container>
+                    <Typography gutterBottom variant="h4" component="div">
+                      {element.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.primary">
+                      {element.description}
+                    </Typography>
+                    <Typography
+                      style={{ border: '1px', borderColor: 'black' }}
+                      variant="h4"
+                      color="text.secondary"
+                    >
+                      {element.price} лв.
+                    </Typography>
+                  </Container>
+                  <Container style={{ display: 'flex', flexDirection: 'column' }}>
+                    <Typography variant="h6" color="text.secondary">
+                      {element.year}
+                    </Typography>
+                    <Typography variant="h6" color="text.secondary">
+                      {element.color}
+                    </Typography>
+                    <Typography variant="h6" color="text.secondary">
+                      {element.fuel}
+                    </Typography>
+                    <Typography variant="h6" color="text.secondary">
+                      {element.transmissionType}
+                    </Typography>
+                    <Typography variant="h6" color="text.secondary">
+                      {element.mileage} km.
+                    </Typography>
+                  </Container>
                 </CardContent>
               </Card>
             ))}
